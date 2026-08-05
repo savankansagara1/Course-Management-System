@@ -1,0 +1,40 @@
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { EnrollmentService } from './enrollment.service.js';
+import { CreateEnrollmentDto } from './dto/create-enrollment.dto.js';
+import { UpdateEnrollmentDto } from './dto/update-enrollment.dto.js';
+import { JwtGuard } from '../auth/jwt.guard.js';
+import { RolesGuard } from '../auth/roles.guard.js';
+import { Roles } from '../auth/roles.decorator.js';
+import { Role } from '../user/user.model.js';
+
+@Controller('enrollment')
+export class EnrollmentController {
+  constructor(private readonly enrollmentService: EnrollmentService) {}
+
+  @Post()
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles(Role.STUDENT)
+  create(@Body() createEnrollmentDto: CreateEnrollmentDto) {
+    return this.enrollmentService.create(createEnrollmentDto);
+  }
+
+  @Get()
+  findAll() {
+    return this.enrollmentService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.enrollmentService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateEnrollmentDto: UpdateEnrollmentDto) {
+    return this.enrollmentService.update(+id, updateEnrollmentDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.enrollmentService.remove(+id);
+  }
+}
